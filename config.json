@@ -1,0 +1,44 @@
+{
+  "whitelist": [
+    "important@company.com",
+    "boss@work.com"
+  ],
+  "rules": [
+    {
+      "name": "Delete Flipkart emails",
+      "condition": {
+        "sender_contains": "flipkart"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Archive old bank statements",
+      "condition": {
+        "sender_contains": "bank",
+        "days_old": 30
+      },
+      "action": "archive"
+    },
+    {
+      "name": "Delete spam",
+      "condition": {
+        "category": "spam"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Delete ecommerce",
+      "condition": {
+        "category": "ecommerce"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Keep personal emails",
+      "condition": {
+        "category": "personal"
+      },
+      "action": "keep"
+    }
+  ]
+}
