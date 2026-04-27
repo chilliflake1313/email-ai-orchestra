@@ -1,0 +1,15 @@
+[Unit]
+Description=Email AI Orchestra Service
+After=network.target
+
+[Service]
+Type=simple
+User=your-username
+WorkingDirectory=/path/to/email-ai-orchestra
+Environment="PATH=/path/to/email-ai-orchestra/venv/bin"
+ExecStart=/path/to/email-ai-orchestra/venv/bin/python app.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
