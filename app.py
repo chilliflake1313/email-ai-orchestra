@@ -4,6 +4,8 @@ from agents.classifier import ClassifierAgent
 from agents.executor import ExecutorAgent
 from core.logger import setup_logger
 from dotenv import load_dotenv
+import requests
+import json
 import os
 import sys
 
@@ -100,6 +102,42 @@ def get_status():
             'success': False,
             'error': str(e)
         }), 500
+
+
+@app.route('/api/health')
+def health_check():
+    health = {
+        'status': 'healthy',
+        'checks': {}
+    }
+    
+    try:
+        classifier = ClassifierAgent()
+        response = requests.get(f"{classifier.ollama_url}/api/tags", timeout=5)
+        health['checks']['ollama'] = 'up' if response.status_code == 200 else 'down'
+    except:
+        health['checks']['ollama'] = 'down'
+        health['status'] = 'degraded'
+    
+    try:
+        reader = ReaderAgent()
+        count = reader.get_email_count()
+        health['checks']['imap'] = 'up'
+        health['inbox_count'] = count
+    except:
+        health['checks']['imap'] = 'down'
+        health['status'] = 'degraded'
+    
+    try:
+        with open('config.json', 'r') as f:
+            json.load(f)
+        health['checks']['config'] = 'valid'
+    except:
+        health['checks']['config'] = 'invalid'
+        health['status'] = 'unhealthy'
+    
+    status_code = 200 if health['status'] == 'healthy' else 503
+    return jsonify(health), status_code
 
 
 if __name__ == '__main__':
