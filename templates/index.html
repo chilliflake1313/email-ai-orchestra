@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email AI Orchestra</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+        
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+        
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+        
+    .header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+        
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+        
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+        
+    .status-bar {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+        
+    .status-item {
+      display: flex;
+      flex-direction: column;
+    }
+        
+    .status-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+        
+    .status-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+    }
+        
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+        
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+        
+    .button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+        
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+        
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+        
+    .email-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+        
+    .email-item {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+    }
+        
+    .email-item:hover {
+      background: #f8f9fa;
+    }
+        
+    .email-sender {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+        
+    .email-subject {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+        
+    .email-date {
+      color: #999;
+      font-size: 12px;
+    }
+        
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+        
+    .results-table th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6;
+    }
+        
+    .results-table td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+        
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+        
+    .badge-delete {
+      background: #fee;
+      color: #c33;
+    }
+        
+    .badge-archive {
+      background: #fef6e4;
+      color: #c9950d;
+    }
+        
+    .badge-keep {
+      background: #e7f5ec;
+      color: #2b9657;
+    }
+        
+    .badge-spam {
+      background: #fee;
+      color: #c33;
+    }
+        
+    .badge-ecommerce {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+        
+    .badge-banking {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+        
+    .badge-personal {
+      background: #e7f5ec;
+      color: #2b9657;
+    }
+        
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+        
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+        
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+        
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+        
+    .summary-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+        
+    .summary-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+        
+    .summary-label {
+      font-size: 14px;
+      color: #666;
+      text-transform: uppercase;
+    }
+        
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+        
+    .alert-warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      color: #856404;
+    }
+        
+    .alert-info {
+      background: #d1ecf1;
+      border: 1px solid #17a2b8;
+      color: #0c5460;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📧 Email AI Orchestra</h1>
+      <p class="subtitle">Local email automation with AI classification</p>
+    </div>
+        
+    {% if dry_run %}
+    <div class="alert alert-warning">
+      <strong>⚠️ Dry Run Mode Active</strong> - Actions will be simulated but not executed
+    </div>
+    {% endif %}
+        
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="status-label">Inbox Count</span>
+        <span class="status-value" id="inbox-count">-</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Status</span>
+        <span class="status-value" id="status">Ready</span>
+      </div>
+      <div class="status-item">
+        <button class="button" id="refresh-btn" onclick="loadEmails()">Refresh Emails</button>
+      </div>
+      <div class="status-item">
+        <button class="button" id="process-btn" onclick="processEmails()">Run Cleanup</button>
+      </div>
+    </div>
+        
+    <div class="card">
+      <h2 class="card-title">Recent Emails</h2>
+      <div id="email-list" class="email-list">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading emails...</p>
+        </div>
+      </div>
+    </div>
+        
+    <div class="card" id="results-card" style="display: none;">
+      <h2 class="card-title">Processing Results</h2>
+            
+      <div class="summary-grid" id="summary-grid"></div>
+            
+      <div style="overflow-x: auto;">
+        <table class="results-table" id="results-table"></table>
+      </div>
+    </div>
+  </div>
+    
+  <script>
+    async function loadStatus() {
+      try {
+        const response = await fetch('/api/status');
+        const data = await response.json();
+                
+        if (data.success) {
+          document.getElementById('inbox-count').textContent = data.inbox_count;
+        }
+      } catch (error) {
+        console.error('Failed to load status:', error);
+      }
+    }
+        
+    async function loadEmails() {
+      const listElement = document.getElementById('email-list');
+      listElement.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading emails...</p></div>';
+            
+      try {
+        const response = await fetch('/api/emails?limit=50');
+        const data = await response.json();
+                
+        if (data.success) {
+          displayEmails(data.emails);
+        } else {
+          listElement.innerHTML = '<p class="loading">Failed to load emails: ' + data.error + '</p>';
+        }
+      } catch (error) {
+        listElement.innerHTML = '<p class="loading">Error: ' + error.message + '</p>';
+      }
+    }
+        
+    function displayEmails(emails) {
+      const listElement = document.getElementById('email-list');
+            
+      if (emails.length === 0) {
+        listElement.innerHTML = '<p class="loading">No emails found</p>';
+        return;
+      }
+            
+      listElement.innerHTML = emails.map(email => `
+        <div class="email-item">
+          <div class="email-sender">${escapeHtml(email.sender)}</div>
+          <div class="email-subject">${escapeHtml(email.subject)}</div>
+          <div class="email-date">${escapeHtml(email.date)}</div>
+        </div>
+      `).join('');
+    }
+        
+    async function processEmails() {
+      const processBtn = document.getElementById('process-btn');
+      const refreshBtn = document.getElementById('refresh-btn');
+      const statusElement = document.getElementById('status');
+      const resultsCard = document.getElementById('results-card');
+            
+      processBtn.disabled = true;
+      refreshBtn.disabled = true;
+      statusElement.textContent = 'Processing...';
+      resultsCard.style.display = 'none';
+            
+      try {
+        const response = await fetch('/api/process', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ limit: 50 })
+        });
+                
+        const data = await response.json();
+                
+        if (data.success) {
+          displayResults(data.results, data.summary, data.dry_run);
+          statusElement.textContent = 'Complete';
+          await loadStatus();
+          await loadEmails();
+        } else {
+          alert('Processing failed: ' + data.error);
+          statusElement.textContent = 'Error';
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+        statusElement.textContent = 'Error';
+      } finally {
+        processBtn.disabled = false;
+        refreshBtn.disabled = false;
+      }
+    }
+        
+    function displayResults(results, summary, dryRun) {
+      const resultsCard = document.getElementById('results-card');
+      const summaryGrid = document.getElementById('summary-grid');
+      const resultsTable = document.getElementById('results-table');
+            
+      resultsCard.style.display = 'block';
+            
+      summaryGrid.innerHTML = `
+        <div class="summary-card">
+          <div class="summary-number">${summary.total}</div>
+          <div class="summary-label">Total</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number">${summary.delete}</div>
+          <div class="summary-label">Deleted</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number">${summary.archive}</div>
+          <div class="summary-label">Archived</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number">${summary.keep}</div>
+          <div class="summary-label">Kept</div>
+        </div>
+      `;
+            
+      resultsTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Sender</th>
+            <th>Category</th>
+            <th>Action</th>
+            <th>Rule</th>
+            ${dryRun ? '' : '<th>Executed</th>'}
+          </tr>
+        </thead>
+        <tbody>
+          ${results.map(result => `
+            <tr>
+              <td>${escapeHtml(result.subject.substring(0, 50))}</td>
+              <td>${escapeHtml(result.sender.substring(0, 30))}</td>
+              <td><span class="badge badge-${result.category}">${result.category}</span></td>
+              <td><span class="badge badge-${result.action}">${result.action}</span></td>
+              <td>${escapeHtml(result.rule)}</td>
+              ${dryRun ? '' : `<td>${result.executed ? '✓' : '✗'}</td>`}
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+    }
+        
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+        
+    loadStatus();
+    loadEmails();
+        
+    setInterval(loadStatus, 30000);
+  </script>
+</body>
+</html>
