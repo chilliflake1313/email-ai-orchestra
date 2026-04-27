@@ -1,0 +1,78 @@
+{
+  "whitelist": [
+    "important@company.com",
+    "boss@work.com",
+    "family@email.com"
+  ],
+  "rules": [
+    {
+      "name": "Delete old promotional emails",
+      "condition": {
+        "sender_contains": "promo",
+        "days_old": 7
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Delete Flipkart notifications",
+      "condition": {
+        "sender_contains": "flipkart"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Delete Amazon marketing",
+      "condition": {
+        "sender_contains": "amazon",
+        "subject_contains": "deal"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Archive old bank statements",
+      "condition": {
+        "sender_contains": "bank",
+        "days_old": 30
+      },
+      "action": "archive"
+    },
+    {
+      "name": "Archive old bills",
+      "condition": {
+        "subject_contains": "invoice",
+        "days_old": 60
+      },
+      "action": "archive"
+    },
+    {
+      "name": "Delete all spam",
+      "condition": {
+        "category": "spam"
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Delete ecommerce emails older than 14 days",
+      "condition": {
+        "category": "ecommerce",
+        "days_old": 14
+      },
+      "action": "delete"
+    },
+    {
+      "name": "Archive banking emails older than 90 days",
+      "condition": {
+        "category": "banking",
+        "days_old": 90
+      },
+      "action": "archive"
+    },
+    {
+      "name": "Keep all personal emails",
+      "condition": {
+        "category": "personal"
+      },
+      "action": "keep"
+    }
+  ]
+}
